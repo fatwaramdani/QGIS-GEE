@@ -1,0 +1,30 @@
+import ee 
+from ee_plugin import Map 
+
+#Defining study area and create buffer    
+point = ee.Geometry.Point(34.870815, -13.422739).buffer(100000);
+
+#Defining datasets and time range
+before = ee.ImageCollection('NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG')\
+  .select('avg_rad')\
+  .filterDate('2021-01-01', '2021-12-31');
+  
+after = ee.ImageCollection('NOAA/VIIRS/001/VNP46A2')\
+  .select('DNB_BRDF_Corrected_NTL')\
+  .filterDate('2021-01-01', '2021-12-31');
+
+#Visualization parameters
+vizVIIRS = {'min': 0, 'max': 20, \
+            'palette':['black', 'purple', 'cyan', 'green', 'yellow', 'red', 'white'],\
+            'opacity': 0.9}
+
+vizBM = {'min': 0, 'max': 50, \
+            'palette':['black', 'purple', 'cyan', 'green', 'yellow', 'red', 'white'],\
+            'opacity': 0.9}
+
+#Display the result
+Map.addLayer(before.mean().clip(point), vizVIIRS, 'VIIRS');
+Map.addLayer(after.mean().clip(point), vizBM, 'BM');
+Map.setCenter(34.870815, -13.422739, 9);
+
+
